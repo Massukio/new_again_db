@@ -134,11 +134,12 @@ class UiMainWindow(object):
         size_policy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
         self.plate_line_edit.setSizePolicy(size_policy)
         font = QtGui.QFont()
-        font.setPointSize(30)
+        font.setPointSize(50)
         font.setBold(True)
         font.setWeight(75)
         self.plate_line_edit.setFont(font)
         self.plate_line_edit.setMaxLength(4)
+        self.plate_line_edit.setAlignment(QtCore.Qt.AlignCenter)
         self.plate_line_edit.setObjectName("plate_line_edit")
         self.grid_layout_5.addWidget(self.plate_line_edit, 0, 1, 1, 1)
 
@@ -146,11 +147,12 @@ class UiMainWindow(object):
         size_policy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
         self.plate_line_edit2.setSizePolicy(size_policy)
         font = QtGui.QFont()
-        font.setPointSize(30)
+        font.setPointSize(50)
         font.setBold(True)
         font.setWeight(75)
         self.plate_line_edit2.setFont(font)
         self.plate_line_edit2.setMaxLength(4)
+        self.plate_line_edit2.setAlignment(QtCore.Qt.AlignCenter)
         self.plate_line_edit2.setObjectName("plate_line_edit2")
         self.grid_layout_5.addWidget(self.plate_line_edit2, 0, 2, 1, 1)
 
@@ -192,7 +194,7 @@ class UiMainWindow(object):
         main_window.setCentralWidget(self.central_widget)
 
         self.menu_bar = QtWidgets.QMenuBar(main_window)
-        self.menu_bar.setGeometry(QtCore.QRect(0, 0, 874, 37))
+        self.menu_bar.setGeometry(QtCore.QRect(0, 0, 950, 21))
         self.menu_bar.setObjectName("menu_bar")
 
         self.menu_other = QtWidgets.QMenu(self.menu_bar)

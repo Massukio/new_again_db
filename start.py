@@ -12,6 +12,7 @@ class MainWindow(QtWidgets.QMainWindow, UiMainWindow):
     def __init__(self, parent=None):
         super(MainWindow, self).__init__(parent)
         self.setup_ui(self)
+        self.adjust_window_size()
         self.add_button.clicked.connect(self.show_add_plate_dialog)
         self.modify_button.clicked.connect(self.modify_selected_row)
         self.connect_button.clicked.connect(self.check_database_exists)
@@ -19,6 +20,18 @@ class MainWindow(QtWidgets.QMainWindow, UiMainWindow):
         self.backup_button.clicked.connect(self.backup_database)
         self.table_handler = TableViewHandler(
             self.table_view, self.plate_line_edit, self.plate_line_edit2, self.search_combo_box)
+
+    def adjust_window_size(self):
+        screen = QtWidgets.QDesktopWidget().screenGeometry()
+        self.setGeometry(0, 0, int(screen.width() * 0.8), int(screen.height() * 0.8))
+        self.setMinimumSize(int(screen.width() * 0.6), int(screen.height() * 0.6))
+
+    def resizeEvent(self, event):
+        self.grid_layout_widget.setGeometry(0, 0, int(self.width() * 0.8), int(self.height() * 0.8))
+        self.grid_layout_widget_2.setGeometry(int(self.width() * 0.8), 0, int(self.width() * 0.2), int(self.height() * 0.8))
+        self.grid_layout_widget_3.setGeometry(0, int(self.height() * 0.8), int(self.width() * 0.8), int(self.height() * 0.2))
+        self.grid_layout_widget_6.setGeometry(int(self.width() * 0.8), int(self.height() * 0.8), int(self.width() * 0.2), int(self.height() * 0.2))
+        super(MainWindow, self).resizeEvent(event)
 
     def show_add_plate_dialog(self):
         dialog = AddPlateDialog(self)
@@ -28,7 +41,8 @@ class MainWindow(QtWidgets.QMainWindow, UiMainWindow):
             add_plate_info(
                 part1=plate_info[0],
                 part2=plate_info[1],
-                phone_number=plate_info[2]
+                phone_number=plate_info[2],
+                note=plate_info[3]
             )
             logger.info(f"新增車牌號碼: {plate_info}")
             self.table_handler.load_data()
@@ -92,18 +106,21 @@ class MainWindow(QtWidgets.QMainWindow, UiMainWindow):
         if selected_row >= 0:
             plate_info = self.table_view.item(selected_row, 0).text()
             phone_number = self.table_view.item(selected_row, 1).text()
+            note = self.table_view.item(selected_row, 2).text()
             part1, part2 = plate_info.split('-')
 
             dialog = AddPlateDialog(self)
             dialog.plate_part1_line_edit.setText(part1)
             dialog.plate_part2_line_edit.setText(part2)
             dialog.phone_number_line_edit.setText(phone_number)
+            dialog.note_line_edit.setText(note)
 
             if dialog.exec_() == QtWidgets.QDialog.Accepted:
-                new_part1, new_part2, new_phone_number = dialog.get_plate_info()
-                update_plate_info(new_part1, new_part2, new_phone_number)
+                new_part1, new_part2, new_phone_number, new_note = dialog.get_plate_info()
+                update_plate_info(new_part1, new_part2, new_phone_number, new_note)
                 self.table_view.setItem(selected_row, 0, QtWidgets.QTableWidgetItem(f"{new_part1}-{new_part2}"))
                 self.table_view.setItem(selected_row, 1, QtWidgets.QTableWidgetItem(new_phone_number))
+                self.table_view.setItem(selected_row, 2, QtWidgets.QTableWidgetItem(new_note))
 
     def backup_database(self):
         options = QtWidgets.QFileDialog.Options()

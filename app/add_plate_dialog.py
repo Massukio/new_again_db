@@ -70,21 +70,44 @@ class AddPlateDialog(QtWidgets.QDialog):
         self.label_2.setText("電話號碼")
         self.grid_layout_2.addWidget(self.label_2, 0, 0, 1, 1)
 
-        self.note_line_edit = QtWidgets.QLineEdit(self.grid_layout_widget_2)
+        self.grid_layout_widget_3 = QtWidgets.QWidget(self)
+        self.grid_layout_widget_3.setGeometry(QtCore.QRect(0, 220, 801, 91))
+        self.grid_layout_3 = QtWidgets.QGridLayout(self.grid_layout_widget_3)
+        self.grid_layout_3.setContentsMargins(0, 0, 0, 0)
+
+        self.note_line_edit = QtWidgets.QLineEdit(self.grid_layout_widget_3)
         font = QtGui.QFont()
         font.setPointSize(25)
         font.setBold(True)
         font.setWeight(75)
         self.note_line_edit.setFont(font)
-        self.grid_layout_2.addWidget(self.note_line_edit, 1, 1, 1, 1)
+        self.grid_layout_3.addWidget(self.note_line_edit, 1, 0, 1, 1)
 
-        self.label_3 = QtWidgets.QLabel(self.grid_layout_widget_2)
+        self.label_3 = QtWidgets.QLabel(self.grid_layout_widget_3)
         font = QtGui.QFont()
         font.setPointSize(20)
         self.label_3.setFont(font)
         self.label_3.setAlignment(QtCore.Qt.AlignCenter)
         self.label_3.setText("備註")
-        self.grid_layout_2.addWidget(self.label_3, 0, 1, 1, 1)
+        self.grid_layout_3.addWidget(self.label_3, 0, 0, 1, 1)
+
+    def resizeEvent(self, event):
+        self.grid_layout_widget.setGeometry(0, 0, int(self.width() * 0.8), int(self.height() * 0.3))
+        self.grid_layout_widget_2.setGeometry(0, int(self.height() * 0.3), int(self.width() * 0.8), int(self.height() * 0.3))
+        self.grid_layout_widget_3.setGeometry(0, int(self.height() * 0.6), int(self.width() * 0.8), int(self.height() * 0.3))
+        self.button_box.setGeometry(int(self.width() * 0.8), int(self.height() * 0.9), int(self.width() * 0.2), int(self.height() * 0.1))
+        self.adjust_font_size()
+        super(AddPlateDialog, self).resizeEvent(event)
+
+    def adjust_font_size(self):
+        base_font_size = 35
+        font_size = max(base_font_size, int(self.height() * 0.03))
+        font = QtGui.QFont()
+        font.setPointSize(font_size)
+        self.plate_part1_line_edit.setFont(font)
+        self.plate_part2_line_edit.setFont(font)
+        self.phone_number_line_edit.setFont(font)
+        self.note_line_edit.setFont(font)
 
     def keyPressEvent(self, event: QtGui.QKeyEvent) -> None:
         """Handle key press events."""

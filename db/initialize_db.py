@@ -10,7 +10,7 @@ def initialize_database():
             part2 TEXT NOT NULL,
             phone_number TEXT NOT NULL,
             note TEXT,
-            UNIQUE(part1, part2)
+            UNIQUE(part1, part2, phone_number)
         )
     ''')
     conn.commit()

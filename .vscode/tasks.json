@@ -4,7 +4,7 @@
         {
             "label": "Run Python File",
             "type": "shell",
-            "command": "${workspaceFolder}/.venv/bin/python",
+            "command": "${config:python.pythonPath}",
             "args": [
                 "${file}"
             ],

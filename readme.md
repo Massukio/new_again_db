@@ -50,31 +50,52 @@ This project is a car plate information management system built using Python and
     python start.py
     ```
 
+## Building the Executable
+
+To build the application into a standalone executable using PyInstaller, follow these steps:
+
+1. Install PyInstaller:
+    ```sh
+    pip install pyinstaller
+    ```
+
+2. Create a PyInstaller spec file:
+    ```sh
+    pyinstaller --name new_again_db --onefile start.py
+    ```
+
+3. Build the executable:
+    ```sh
+    pyinstaller new_again_db.spec
+    ```
+
+The executable will be created in the dist directory.
+
 ## Project Structure
 
-- `app/`: Contains the main application code.
+- app: Contains the main application code.
   - `__init__.py`: Makes the directory a package.
   - `add_plate_dialog.py`: Dialog for adding car plate information.
   - `logger.py`: Configures logging for the application.
   - `main_ui.py`: Main UI setup for the application.
   - `table_view_handler.py`: Handles the table view operations.
-- `db/`: Contains database-related scripts.
+- db: Contains database-related scripts.
   - `__init__.py`: Makes the directory a package.
   - `database.py`: Database operations.
   - `initialize_db.py`: Script to initialize the database.
 - `designer/`: Contains UI design files.
   - `add.ui`: UI design for adding car plate information.
   - `new_again.ui`: Main window UI design.
-- `.vscode/`: Contains VS Code configuration files.
+- .vscode: Contains VS Code configuration files.
   - `settings.json`: VS Code settings.
   - `tasks.json`: VS Code tasks.
-- `start.py`: Entry point for the application.
+- start.py: Entry point for the application.
 - `requirements.txt`: List of required packages.
-- `.gitignore`: Git ignore file.
+- .gitignore: Git ignore file.
 
 ## License
 
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
+This project is licensed under the MIT License. See the LICENSE file for details.
 
 ## Author
 

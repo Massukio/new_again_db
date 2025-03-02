@@ -119,11 +119,14 @@ class MainWindow(QtWidgets.QMainWindow, UiMainWindow):
         if selected_row >= 0:
             plate_info = self.table_view.item(selected_row, 0).text()
             phone_number = self.table_view.item(selected_row, 1).text()
-            reply = QtWidgets.QMessageBox.question(
-                None, '確認刪除', f"確定要刪除車牌號碼 {plate_info} 和電話號碼 {phone_number} 嗎？",
-                QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No, QtWidgets.QMessageBox.No
-            )
-            if reply == QtWidgets.QMessageBox.Yes:
+            msg_box = QtWidgets.QMessageBox()
+            msg_box.setIcon(QtWidgets.QMessageBox.Question)
+            msg_box.setWindowTitle('確認刪除')
+            msg_box.setText(f"確定要刪除車牌號碼 {plate_info} 和電話號碼 {phone_number} 嗎？")
+            yes_button = msg_box.addButton("是", QtWidgets.QMessageBox.YesRole)
+            no_button = msg_box.addButton("否", QtWidgets.QMessageBox.NoRole)
+            msg_box.exec_()
+            if msg_box.clickedButton() == yes_button:
                 self.table_handler.delete_selected_row()
 
     def update_line_edits(self):

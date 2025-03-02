@@ -35,17 +35,29 @@ def update_plate_info(part1: str, part2: str, new_phone_number: str, new_note: s
     """Update the phone number and note for an existing plate info."""
     conn = get_connection()
     cursor = conn.cursor()
-    cursor.execute('''
-        UPDATE plate_info
-        SET phone_number = ?, note = ?
-        WHERE part1 = ? AND part2 = ?
-    ''', (new_phone_number, new_note, part1.upper(), part2.upper()))
-    if cursor.rowcount > 0:
-        conn.commit()
-        logger.info(f"Updated plate info: {part1.upper()}-{part2.upper()}")
-    else:
-        logger.error("Plate info not found in the database.")
-    conn.close()
+    try:
+        cursor.execute('''
+            SELECT COUNT(*)
+            FROM plate_info
+            WHERE part1 = ? AND part2 = ? AND phone_number = ?
+        ''', (part1.upper(), part2.upper(), new_phone_number))
+        if cursor.fetchone()[0] > 0:
+            raise sqlite3.IntegrityError("UNIQUE constraint failed: plate_info.part1, plate_info.part2, plate_info.phone_number")
+        
+        cursor.execute('''
+            UPDATE plate_info
+            SET phone_number = ?, note = ?
+            WHERE part1 = ? AND part2 = ?
+        ''', (new_phone_number, new_note, part1.upper(), part2.upper()))
+        if cursor.rowcount > 0:
+            conn.commit()
+            logger.info(f"Updated plate info: {part1.upper()}-{part2.upper()}")
+        else:
+            logger.error("Plate info not found in the database.")
+    except sqlite3.IntegrityError as e:
+        logger.error(f"Failed to update plate info: {e}")
+    finally:
+        conn.close()
 
 def delete_plate_info(part1: str, part2: str) -> None:
     """Delete a plate info from the database."""

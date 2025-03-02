@@ -105,6 +105,8 @@ class AddPlateDialog(QtWidgets.QDialog):
         self.button_box = QtWidgets.QDialogButtonBox(self)
         self.button_box.setOrientation(QtCore.Qt.Horizontal)
         self.button_box.setStandardButtons(QtWidgets.QDialogButtonBox.Cancel | QtWidgets.QDialogButtonBox.Ok)
+        self.button_box.button(QtWidgets.QDialogButtonBox.Ok).setText("確定")
+        self.button_box.button(QtWidgets.QDialogButtonBox.Cancel).setText("取消")
         self.button_box.accepted.connect(self.accept)
         self.button_box.rejected.connect(self.reject)
         self.main_layout.addWidget(self.button_box)
@@ -143,13 +145,21 @@ class AddPlateDialog(QtWidgets.QDialog):
         plate_info = self.get_plate_info()
         logger.debug(f"Plate Info: {plate_info}")
         if plate_and_phone_exists(plate_info[0], plate_info[1], plate_info[2]):
-            QtWidgets.QMessageBox.critical(self, "錯誤", "此車牌號碼和電話號碼已存在。")
+            error_dialog = QtWidgets.QMessageBox()
+            error_dialog.setIcon(QtWidgets.QMessageBox.Critical)
+            error_dialog.setWindowTitle("錯誤")
+            error_dialog.setText("此車牌號碼和電話號碼已存在。")
+            error_dialog.addButton("確定", QtWidgets.QMessageBox.AcceptRole)
+            error_dialog.exec_()
         elif plate_exists(plate_info[0], plate_info[1]):
-            reply = QtWidgets.QMessageBox.warning(
-                self, "警告", "此車牌號碼已存在但電話號碼不同。是否繼續保存？",
-                QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No, QtWidgets.QMessageBox.No
-            )
-            if reply == QtWidgets.QMessageBox.Yes:
+            warning_dialog = QtWidgets.QMessageBox()
+            warning_dialog.setIcon(QtWidgets.QMessageBox.Warning)
+            warning_dialog.setWindowTitle("警告")
+            warning_dialog.setText("此車牌號碼已存在但電話號碼不同。是否繼續保存？")
+            yes_button = warning_dialog.addButton("是", QtWidgets.QMessageBox.YesRole)
+            no_button = warning_dialog.addButton("否", QtWidgets.QMessageBox.NoRole)
+            warning_dialog.exec_()
+            if warning_dialog.clickedButton() == yes_button:
                 add_plate_info(plate_info[0], plate_info[1], plate_info[2], plate_info[3])
                 self.done(QtWidgets.QDialog.Accepted)
             else:

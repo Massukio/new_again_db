@@ -24,6 +24,7 @@ class MainWindow(QtWidgets.QMainWindow, UiMainWindow):
         self.backup_button.clicked.connect(self.backup_database)
         self.pre_check_database()
         self.initialize_table_handler()
+        self.set_background_color()
 
     def pre_check_database(self):
         if not os.path.exists(DATABASE_FILE):
@@ -65,11 +66,29 @@ class MainWindow(QtWidgets.QMainWindow, UiMainWindow):
         self.setGeometry(0, 0, int(screen.width() * 0.8), int(screen.height() * 0.8))
         self.setMinimumSize(int(screen.width() * 0.6), int(screen.height() * 0.6))
 
+    def adjust_font_size(self):
+        screen = QtWidgets.QDesktopWidget().screenGeometry()
+        base_font_size = min(screen.width(), screen.height()) // 50
+        self.set_font_size(self.central_widget, base_font_size)
+        self.set_font_size(self.table_view, base_font_size + 2)  # Make table view font size larger
+        self.set_font_size(self.plate_line_edit, base_font_size + 10)  # Increase font size for line edits
+        self.set_font_size(self.plate_line_edit2, base_font_size + 10)  # Increase font size for line edits
+
+    def set_font_size(self, widget, font_size):
+        font = widget.font()
+        font.setPointSize(font_size)
+        widget.setFont(font)
+        for child in widget.findChildren(QtWidgets.QWidget):
+            self.set_font_size(child, font_size)
+
     def resizeEvent(self, event):
-        self.grid_layout_widget.setGeometry(0, 0, int(self.width() * 0.8), int(self.height() * 0.8))
-        self.grid_layout_widget_2.setGeometry(int(self.width() * 0.8), 0, int(self.width() * 0.2), int(self.height() * 0.8))
-        self.grid_layout_widget_3.setGeometry(0, int(self.height() * 0.8), int(self.width() * 0.8), int(self.height() * 0.2))
-        self.grid_layout_widget_6.setGeometry(int(self.width() * 0.8), int(self.height() * 0.8), int(self.width() * 0.2), int(self.height() * 0.2))
+        self.adjust_font_size()
+        margin = 5
+        bottom_margin = 20
+        self.grid_layout_widget.setGeometry(margin, margin, int(self.width() * 0.8) - margin, int(self.height() * 0.8) - margin)
+        self.grid_layout_widget_2.setGeometry(int(self.width() * 0.8) + margin, margin, int(self.width() * 0.2) - margin, int(self.height() * 0.8) - margin)
+        self.grid_layout_widget_3.setGeometry(margin, int(self.height() * 0.8) + margin, int(self.width() * 0.8) - margin, int(self.height() * 0.2) - bottom_margin)
+        self.grid_layout_widget_6.setGeometry(int(self.width() * 0.8) + margin, int(self.height() * 0.8) + margin, int(self.width() * 0.2) - margin, int(self.height() * 0.2) - bottom_margin)
         super(MainWindow, self).resizeEvent(event)
 
     def keyPressEvent(self, event):
@@ -123,6 +142,11 @@ class MainWindow(QtWidgets.QMainWindow, UiMainWindow):
             self.plate_line_edit2.setMaxLength(4)
             self.plate_line_edit2.setValidator(QtGui.QRegExpValidator(QtCore.QRegExp("[A-Za-z0-9]{0,4}")))
 
+        self.plate_line_edit.setAlignment(QtCore.Qt.AlignCenter)
+        self.plate_line_edit.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
+        self.plate_line_edit2.setAlignment(QtCore.Qt.AlignCenter)
+        self.plate_line_edit2.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
+
     def check_database_location(self):
         QtWidgets.QMessageBox.information(
             self, '資料庫位置', f'資料庫位置: {os.path.abspath(DATABASE_FILE)}',
@@ -163,6 +187,14 @@ class MainWindow(QtWidgets.QMainWindow, UiMainWindow):
                 QtWidgets.QMessageBox.information(None, '成功', '資料庫備份成功。', QtWidgets.QMessageBox.Ok)
             except Exception as e:
                 QtWidgets.QMessageBox.critical(None, '錯誤', f'資料庫備份失敗: {e}', QtWidgets.QMessageBox.Ok)
+
+    def set_background_color(self):
+        gradient = QtGui.QLinearGradient(0, 0, 0, self.height())
+        gradient.setColorAt(0.0, QtGui.QColor(173, 216, 230))  # Light Blue
+        gradient.setColorAt(1.0, QtGui.QColor(135, 206, 250))  # Light Sky Blue
+        palette = QtGui.QPalette()
+        palette.setBrush(QtGui.QPalette.Window, QtGui.QBrush(gradient))
+        self.setPalette(palette)
 
 if __name__ == "__main__":
     import sys

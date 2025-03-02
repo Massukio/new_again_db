@@ -15,7 +15,7 @@ def generate_unique_plate_infos(num):
 
 def generate_data(num_records=100000, db_path='database.db'):
     unique_plate_infos = generate_unique_plate_infos(num_records)
-    data = [(part1, part2, ''.join(random.choices(string.digits, k=10)))
+    data = [(part1, part2, ''.join(random.choices(string.digits, k=10)), generate_random_string(10))
             for part1, part2 in unique_plate_infos]
 
     conn = sqlite3.connect(db_path)
@@ -25,8 +25,9 @@ def generate_data(num_records=100000, db_path='database.db'):
                         part1 TEXT NOT NULL,
                         part2 TEXT NOT NULL,
                         phone_number TEXT NOT NULL,
+                        note TEXT,
                         UNIQUE(part1, part2))''')
-    cursor.executemany("INSERT OR IGNORE INTO plate_info (part1, part2, phone_number) VALUES (?, ?, ?)", data)
+    cursor.executemany("INSERT OR IGNORE INTO plate_info (part1, part2, phone_number, note) VALUES (?, ?, ?, ?)", data)
     conn.commit()
     conn.close()
 

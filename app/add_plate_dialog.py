@@ -70,6 +70,22 @@ class AddPlateDialog(QtWidgets.QDialog):
         self.label_2.setText("電話號碼")
         self.grid_layout_2.addWidget(self.label_2, 0, 0, 1, 1)
 
+        self.note_line_edit = QtWidgets.QLineEdit(self.grid_layout_widget_2)
+        font = QtGui.QFont()
+        font.setPointSize(25)
+        font.setBold(True)
+        font.setWeight(75)
+        self.note_line_edit.setFont(font)
+        self.grid_layout_2.addWidget(self.note_line_edit, 1, 1, 1, 1)
+
+        self.label_3 = QtWidgets.QLabel(self.grid_layout_widget_2)
+        font = QtGui.QFont()
+        font.setPointSize(20)
+        self.label_3.setFont(font)
+        self.label_3.setAlignment(QtCore.Qt.AlignCenter)
+        self.label_3.setText("備註")
+        self.grid_layout_2.addWidget(self.label_3, 0, 1, 1, 1)
+
     def keyPressEvent(self, event: QtGui.QKeyEvent) -> None:
         """Handle key press events."""
         if event.key() in (QtCore.Qt.Key_Return, QtCore.Qt.Key_Enter):
@@ -93,7 +109,7 @@ class AddPlateDialog(QtWidgets.QDialog):
 
     def get_plate_info(self) -> tuple:
         """Get the plate info from the input fields."""
-        return self.plate_part1_line_edit.text(), self.plate_part2_line_edit.text(), self.phone_number_line_edit.text()
+        return self.plate_part1_line_edit.text(), self.plate_part2_line_edit.text(), self.phone_number_line_edit.text(), self.note_line_edit.text()
 
     def convert_to_upper(self, text: str) -> None:
         """Convert the input text to uppercase."""

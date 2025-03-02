@@ -7,13 +7,13 @@ from db.database import delete_plate_info, update_plate_info
 class UiMainWindow(object):
     def setup_ui(self, main_window):
         main_window.setObjectName("MainWindow")
-        main_window.resize(874, 450)
+        main_window.resize(950, 500)
 
         self.central_widget = QtWidgets.QWidget(main_window)
         self.central_widget.setObjectName("central_widget")
 
         self.grid_layout_widget = QtWidgets.QWidget(self.central_widget)
-        self.grid_layout_widget.setGeometry(QtCore.QRect(0, 0, 671, 341))
+        self.grid_layout_widget.setGeometry(QtCore.QRect(0, 0, 750, 400))
         self.grid_layout_widget.setObjectName("grid_layout_widget")
 
         self.grid_layout = QtWidgets.QGridLayout(self.grid_layout_widget)
@@ -28,11 +28,11 @@ class UiMainWindow(object):
         self.table_view.horizontalHeader().setVisible(True)
         self.table_view.horizontalHeader().setCascadingSectionResizes(False)
         self.table_view.setAlternatingRowColors(True)
-        self.table_view.setColumnCount(2)
-        self.table_view.setHorizontalHeaderLabels(["車牌號碼", "電話號碼"])
+        self.table_view.setColumnCount(3)
+        self.table_view.setHorizontalHeaderLabels(["車牌號碼", "電話號碼", "備註"])
         self.table_view.horizontalHeader().setSectionResizeMode(QtWidgets.QHeaderView.Stretch)
         font = QtGui.QFont()
-        font.setPointSize(20)
+        font.setPointSize(35)
         self.table_view.setFont(font)
         self.table_view.setSelectionBehavior(QtWidgets.QTableView.SelectRows)
         self.table_view.setSelectionMode(QtWidgets.QTableView.SingleSelection)
@@ -54,7 +54,7 @@ class UiMainWindow(object):
         self.grid_layout.addWidget(self.title_label, 0, 0, 1, 1)
 
         self.grid_layout_widget_2 = QtWidgets.QWidget(self.central_widget)
-        self.grid_layout_widget_2.setGeometry(QtCore.QRect(670, 0, 201, 341))
+        self.grid_layout_widget_2.setGeometry(QtCore.QRect(750, 0, 200, 400))
         self.grid_layout_widget_2.setObjectName("grid_layout_widget_2")
 
         self.grid_layout_3 = QtWidgets.QGridLayout(self.grid_layout_widget_2)
@@ -123,7 +123,7 @@ class UiMainWindow(object):
         self.grid_layout_3.addWidget(self.view_all_button, 1, 0, 1, 1)
 
         self.grid_layout_widget_3 = QtWidgets.QWidget(self.central_widget)
-        self.grid_layout_widget_3.setGeometry(QtCore.QRect(0, 340, 671, 101))
+        self.grid_layout_widget_3.setGeometry(QtCore.QRect(0, 400, 750, 100))
         self.grid_layout_widget_3.setObjectName("grid_layout_widget_3")
 
         self.grid_layout_5 = QtWidgets.QGridLayout(self.grid_layout_widget_3)
@@ -170,7 +170,7 @@ class UiMainWindow(object):
         self.grid_layout_5.addWidget(self.search_combo_box, 0, 0, 1, 1)
 
         self.grid_layout_widget_6 = QtWidgets.QWidget(self.central_widget)
-        self.grid_layout_widget_6.setGeometry(QtCore.QRect(670, 340, 201, 101))
+        self.grid_layout_widget_6.setGeometry(QtCore.QRect(750, 400, 200, 100))
         self.grid_layout_widget_6.setObjectName("grid_layout_widget_6")
 
         self.grid_layout_8 = QtWidgets.QGridLayout(self.grid_layout_widget_6)
@@ -233,6 +233,7 @@ class UiMainWindow(object):
         self.action_about.setText(_translate("MainWindow", "關於"))
         self.table_view.horizontalHeaderItem(0).setText(_translate("MainWindow", "車牌號碼"))
         self.table_view.horizontalHeaderItem(1).setText(_translate("MainWindow", "電話號碼"))
+        self.table_view.horizontalHeaderItem(2).setText(_translate("MainWindow", "備註"))
 
     def convert_to_upper(self, text):
         sender = self.sender()

@@ -9,6 +9,7 @@ def initialize_database():
             part1 TEXT NOT NULL,
             part2 TEXT NOT NULL,
             phone_number TEXT NOT NULL,
+            note TEXT,
             UNIQUE(part1, part2)
         )
     ''')

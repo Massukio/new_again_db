@@ -22,10 +22,12 @@ class TableViewHandler:
         for row, (plate, info) in enumerate(data.items()):
             self.table_view.setItem(row, 0, QtWidgets.QTableWidgetItem(plate))
             self.table_view.setItem(row, 1, QtWidgets.QTableWidgetItem(info["phone_number"]))
+            self.table_view.setItem(row, 2, QtWidgets.QTableWidgetItem(info["note"]))
 
     def filter_table(self):
-        part1_filter_text = phone_filter_text = self.plate_line_edit.text().lower()
+        part1_filter_text = self.plate_line_edit.text().lower()
         part2_filter_text = self.plate_line_edit2.text().lower()
+        phone_filter_text = self.phone_line_edit.text().lower()
         search_mode = self.search_combo_box.currentText()
         if search_mode == "電話查詢":
             data = filter_plate_info("", "", phone_filter_text, search_mode)

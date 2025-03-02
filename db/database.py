@@ -6,15 +6,15 @@ DATABASE_FILE = "database.db"
 def get_connection():
     return sqlite3.connect(DATABASE_FILE)
 
-def add_plate_info(part1: str, part2: str, phone_number: str) -> None:
+def add_plate_info(part1: str, part2: str, phone_number: str, note: str) -> None:
     """Add a new plate info to the database."""
     conn = get_connection()
     cursor = conn.cursor()
     try:
         cursor.execute('''
-            INSERT INTO plate_info (part1, part2, phone_number)
-            VALUES (?, ?, ?)
-        ''', (part1.upper(), part2.upper(), phone_number))
+            INSERT INTO plate_info (part1, part2, phone_number, note)
+            VALUES (?, ?, ?, ?)
+        ''', (part1.upper(), part2.upper(), phone_number, note))
         conn.commit()
         logger.info(f"Added plate info: {part1.upper()}-{part2.upper()}")
     except sqlite3.IntegrityError:
@@ -26,20 +26,20 @@ def get_all_plate_info() -> dict:
     """Get all plate info from the database."""
     conn = get_connection()
     cursor = conn.cursor()
-    cursor.execute('SELECT part1, part2, phone_number FROM plate_info')
+    cursor.execute('SELECT part1, part2, phone_number, note FROM plate_info')
     data = cursor.fetchall()
     conn.close()
-    return {f"{row[0]}-{row[1]}": {"phone_number": row[2]} for row in data}
+    return {f"{row[0]}-{row[1]}": {"phone_number": row[2], "note": row[3]} for row in data}
 
-def update_plate_info(part1: str, part2: str, new_phone_number: str) -> None:
-    """Update the phone number for an existing plate info."""
+def update_plate_info(part1: str, part2: str, new_phone_number: str, new_note: str) -> None:
+    """Update the phone number and note for an existing plate info."""
     conn = get_connection()
     cursor = conn.cursor()
     cursor.execute('''
         UPDATE plate_info
-        SET phone_number = ?
+        SET phone_number = ?, note = ?
         WHERE part1 = ? AND part2 = ?
-    ''', (new_phone_number, part1.upper(), part2.upper()))
+    ''', (new_phone_number, new_note, part1.upper(), part2.upper()))
     if cursor.rowcount > 0:
         conn.commit()
         logger.info(f"Updated plate info: {part1.upper()}-{part2.upper()}")
@@ -68,34 +68,34 @@ def filter_plate_info(part1_filter: str, part2_filter: str, phone_filter: str, s
     cursor = conn.cursor()
     if search_mode == "電話查詢":
         cursor.execute('''
-            SELECT part1, part2, phone_number
+            SELECT part1, part2, phone_number, note
             FROM plate_info
             WHERE phone_number LIKE ?
         ''', (f"%{phone_filter}%",))
     else:
         if part1_filter and part2_filter:
             cursor.execute('''
-                SELECT part1, part2, phone_number
+                SELECT part1, part2, phone_number, note
                 FROM plate_info
                 WHERE part1 LIKE ? AND part2 LIKE ?
             ''', (f"%{part1_filter}%", f"%{part2_filter}%"))
         elif part1_filter:
             cursor.execute('''
-                SELECT part1, part2, phone_number
+                SELECT part1, part2, phone_number, note
                 FROM plate_info
                 WHERE part1 LIKE ?
             ''', (f"%{part1_filter}%",))
         elif part2_filter:
             cursor.execute('''
-                SELECT part1, part2, phone_number
+                SELECT part1, part2, phone_number, note
                 FROM plate_info
                 WHERE part2 LIKE ?
             ''', (f"%{part2_filter}%",))
         else:
             cursor.execute('''
-                SELECT part1, part2, phone_number
+                SELECT part1, part2, phone_number, note
                 FROM plate_info
             ''')
     data = cursor.fetchall()
     conn.close()
-    return {f"{row[0]}-{row[1]}": {"phone_number": row[2]} for row in data}
+    return {f"{row[0]}-{row[1]}": {"phone_number": row[2], "note": row[3]} for row in data}

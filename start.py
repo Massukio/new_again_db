@@ -55,6 +55,7 @@ class MainWindow(QtWidgets.QMainWindow, UiMainWindow):
         try:
             self.table_handler = TableViewHandler(
                 self.table_view, self.plate_line_edit, self.plate_line_edit2, self.search_combo_box)
+            self.table_handler.load_data()  # Ensure data is loaded and columns are resized
         except sqlite3.OperationalError as e:
             logger.error(f"Database error: {e}")
             QtWidgets.QMessageBox.critical(
@@ -117,8 +118,9 @@ class MainWindow(QtWidgets.QMainWindow, UiMainWindow):
         selected_row = self.table_view.currentRow()
         if selected_row >= 0:
             plate_info = self.table_view.item(selected_row, 0).text()
+            phone_number = self.table_view.item(selected_row, 1).text()
             reply = QtWidgets.QMessageBox.question(
-                None, '確認刪除', f"確定要刪除車牌號碼 {plate_info} 嗎？",
+                None, '確認刪除', f"確定要刪除車牌號碼 {plate_info} 和電話號碼 {phone_number} 嗎？",
                 QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No, QtWidgets.QMessageBox.No
             )
             if reply == QtWidgets.QMessageBox.Yes:

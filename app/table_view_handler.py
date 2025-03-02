@@ -16,14 +16,20 @@ class TableViewHandler:
     def load_data(self):
         data = get_all_plate_info()
         self._populate_table(data)
+        self.table_view.resizeColumnsToContents()  # Ensure columns are resized to fit content
+        self._set_minimum_column_widths()
+
+    def _set_minimum_column_widths(self):
+        for column in range(self.table_view.columnCount()):
+            self.table_view.setColumnWidth(column, max(self.table_view.columnWidth(column), 150))  # Set minimum width to 150
 
     def _populate_table(self, data):
         self.table_view.setRowCount(len(data))
-        for row, (plate, info) in enumerate(data.items()):
+        for row, (plate, phone_number, note) in enumerate(data):
             self.table_view.setItem(row, 0, QtWidgets.QTableWidgetItem(plate))
-            self.table_view.setItem(row, 1, QtWidgets.QTableWidgetItem(info["phone_number"]))
-            note_item = QtWidgets.QTableWidgetItem(info["note"])
-            note_item.setToolTip(f"<span style='font-size: 14pt;'>{info['note']}</span>")  # Add tooltip with larger font
+            self.table_view.setItem(row, 1, QtWidgets.QTableWidgetItem(phone_number))
+            note_item = QtWidgets.QTableWidgetItem(note)
+            note_item.setToolTip(f"<span style='font-size: 14pt;'>{note}</span>")  # Add tooltip with larger font
             self.table_view.setItem(row, 2, note_item)
 
     def update_row(self, row, plate, phone_number, note):

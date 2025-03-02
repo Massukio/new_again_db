@@ -1,5 +1,7 @@
 from PyQt5 import QtWidgets, QtCore, QtGui
 from app.logger import logger
+from db.database import plate_exists, plate_and_phone_exists, add_plate_info
+import sqlite3
 
 class AddPlateDialog(QtWidgets.QDialog):
     def __init__(self, parent=None):
@@ -128,6 +130,8 @@ class AddPlateDialog(QtWidgets.QDialog):
         if event.key() in (QtCore.Qt.Key_Return, QtCore.Qt.Key_Enter):
             focus_widget = self.focusWidget()
             if focus_widget == self.phone_number_line_edit:
+                self.note_line_edit.setFocus()
+            elif focus_widget == self.note_line_edit:
                 self.accept()
             elif isinstance(focus_widget, QtWidgets.QLineEdit):
                 self.focusNextChild()
@@ -138,7 +142,21 @@ class AddPlateDialog(QtWidgets.QDialog):
         """Handle the accept event."""
         plate_info = self.get_plate_info()
         logger.debug(f"Plate Info: {plate_info}")
-        self.done(QtWidgets.QDialog.Accepted)
+        if plate_and_phone_exists(plate_info[0], plate_info[1], plate_info[2]):
+            QtWidgets.QMessageBox.critical(self, "錯誤", "此車牌號碼和電話號碼已存在。")
+        elif plate_exists(plate_info[0], plate_info[1]):
+            reply = QtWidgets.QMessageBox.warning(
+                self, "警告", "此車牌號碼已存在但電話號碼不同。是否繼續保存？",
+                QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No, QtWidgets.QMessageBox.No
+            )
+            if reply == QtWidgets.QMessageBox.Yes:
+                add_plate_info(plate_info[0], plate_info[1], plate_info[2], plate_info[3])
+                self.done(QtWidgets.QDialog.Accepted)
+            else:
+                self.done(QtWidgets.QDialog.Rejected)
+        else:
+            add_plate_info(plate_info[0], plate_info[1], plate_info[2], plate_info[3])
+            self.done(QtWidgets.QDialog.Accepted)
 
     def reject(self) -> None:
         """Handle the reject event."""

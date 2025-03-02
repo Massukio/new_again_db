@@ -189,14 +189,13 @@ class AddPlateDialog(QtWidgets.QDialog):
         QDialog {{
             background-color: #f0f0f0;
             font-family: 'Microsoft YaHei', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            font-size: {base_font_size}px;
             color: #333;
         }}
         QLineEdit {{
             padding: 10px;
             border: 1px solid #ccc;
             border-radius: 4px;
-            font-size: {base_font_size+5}px;
+            font-size: {self.parent().input_font_size}px;
         }}
         QLabel {{
             font-size: {base_font_size}px;
@@ -209,7 +208,7 @@ class AddPlateDialog(QtWidgets.QDialog):
             padding: 10px 20px;
             text-align: center;
             text-decoration: none;
-            font-size: {base_font_size}px;
+            font-size: {self.parent().button_font_size}px;
             margin: 4px 2px;
             border-radius: 8px;
         }}

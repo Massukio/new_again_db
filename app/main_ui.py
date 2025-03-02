@@ -173,6 +173,9 @@ class UiMainWindow(object):
         self.action_about.setObjectName("action_about")
 
         self.menu_other.addAction(self.action_about)
+        self.action_adjust_font_size = QtWidgets.QAction(main_window)
+        self.action_adjust_font_size.setObjectName("action_adjust_font_size")
+        self.menu_other.addAction(self.action_adjust_font_size)
         self.menu_bar.addAction(self.menu_other.menuAction())
 
         self.retranslate_ui(main_window)
@@ -203,6 +206,7 @@ class UiMainWindow(object):
         self.backup_button.setText(_translate("MainWindow", "備份資料庫"))
         self.menu_other.setTitle(_translate("MainWindow", "其他"))
         self.action_about.setText(_translate("MainWindow", "關於"))
+        self.action_adjust_font_size.setText(_translate("MainWindow", "調整字體大小"))
         self.table_view.horizontalHeaderItem(0).setText(_translate("MainWindow", "車牌號碼"))
         self.table_view.horizontalHeaderItem(1).setText(_translate("MainWindow", "電話號碼"))
         self.table_view.horizontalHeaderItem(2).setText(_translate("MainWindow", "備註"))

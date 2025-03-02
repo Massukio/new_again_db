@@ -9,12 +9,18 @@ from db.database import add_plate_info, get_all_plate_info, update_plate_info, d
 from db.initialize_db import initialize_database
 import sqlite3
 import shutil
+import json
 
 DATABASE_FILE = "database.db"
+CONFIG_FILE = "config.json"
 
 class MainWindow(QtWidgets.QMainWindow, UiMainWindow):
     def __init__(self, parent=None):
         super(MainWindow, self).__init__(parent)
+        self.button_font_size = 18  # Initialize button font size
+        self.table_font_size = 18  # Initialize table font size
+        self.input_font_size = 18  # Initialize input field font size
+        self.load_font_size_config()  # Load font size config before applying style
         self.setup_ui(self)
         self.adjust_window_size()
         self.apply_modern_style()
@@ -26,6 +32,7 @@ class MainWindow(QtWidgets.QMainWindow, UiMainWindow):
         self.pre_check_database()
         self.initialize_table_handler()
         self.set_background_color()
+        self.action_adjust_font_size.triggered.connect(self.show_font_size_dialog)
 
     def pre_check_database(self):
         if not os.path.exists(DATABASE_FILE):
@@ -201,12 +208,69 @@ class MainWindow(QtWidgets.QMainWindow, UiMainWindow):
         palette.setBrush(QtGui.QPalette.Window, QtGui.QBrush(gradient))
         self.setPalette(palette)
 
+    def load_font_size_config(self):
+        if os.path.exists(CONFIG_FILE):
+            with open(CONFIG_FILE, 'r') as file:
+                config = json.load(file)
+                self.button_font_size = config.get("button_font_size", 18)
+                self.table_font_size = config.get("table_font_size", 18)
+                self.input_font_size = config.get("input_font_size", 18)
+        else:
+            self.button_font_size = 18
+            self.table_font_size = 18
+            self.input_font_size = 18
+
+    def save_font_size_config(self):
+        config = {
+            "button_font_size": self.button_font_size,
+            "table_font_size": self.table_font_size,
+            "input_font_size": self.input_font_size
+        }
+        with open(CONFIG_FILE, 'w') as file:
+            json.dump(config, file)
+
+    def show_font_size_dialog(self):
+        font_size_dialog = QtWidgets.QDialog(self)
+        font_size_dialog.setWindowTitle("調整字體大小")
+        layout = QtWidgets.QVBoxLayout(font_size_dialog)
+
+        button_font_size_label = QtWidgets.QLabel("按鈕字體大小:")
+        button_font_size_spinbox = QtWidgets.QSpinBox()
+        button_font_size_spinbox.setRange(10, 300)
+        button_font_size_spinbox.setValue(self.button_font_size)
+        layout.addWidget(button_font_size_label)
+        layout.addWidget(button_font_size_spinbox)
+
+        table_font_size_label = QtWidgets.QLabel("表格字體大小:")
+        table_font_size_spinbox = QtWidgets.QSpinBox()
+        table_font_size_spinbox.setRange(10, 300)
+        table_font_size_spinbox.setValue(self.table_font_size)
+        layout.addWidget(table_font_size_label)
+        layout.addWidget(table_font_size_spinbox)
+
+        input_font_size_label = QtWidgets.QLabel("輸入欄字體大小:")
+        input_font_size_spinbox = QtWidgets.QSpinBox()
+        input_font_size_spinbox.setRange(10, 300)
+        input_font_size_spinbox.setValue(self.input_font_size)
+        layout.addWidget(input_font_size_label)
+        layout.addWidget(input_font_size_spinbox)
+
+        button_box = QtWidgets.QDialogButtonBox(QtWidgets.QDialogButtonBox.Ok | QtWidgets.QDialogButtonBox.Cancel)
+        button_box.accepted.connect(font_size_dialog.accept)
+        button_box.rejected.connect(font_size_dialog.reject)
+        layout.addWidget(button_box)
+
+        if font_size_dialog.exec_() == QtWidgets.QDialog.Accepted:
+            self.button_font_size = button_font_size_spinbox.value()
+            self.table_font_size = table_font_size_spinbox.value()
+            self.input_font_size = input_font_size_spinbox.value()
+            self.save_font_size_config()
+            self.apply_modern_style()
+
     def apply_modern_style(self):
-        base_font_size = 18  # Default base font size
         style_sheet = f"""
         QWidget {{
             font-family: 'Microsoft YaHei', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            font-size: {base_font_size}px;
             color: #333;
         }}
         QMainWindow {{
@@ -219,7 +283,7 @@ class MainWindow(QtWidgets.QMainWindow, UiMainWindow):
             padding: 10px 20px;
             text-align: center;
             text-decoration: none;
-            font-size: {base_font_size}px;
+            font-size: {self.button_font_size}px;
             margin: 4px 2px;
             border-radius: 8px;
         }}
@@ -230,33 +294,23 @@ class MainWindow(QtWidgets.QMainWindow, UiMainWindow):
             padding: 10px;
             border: 1px solid #ccc;
             border-radius: 4px;
-            font-size: {base_font_size+7}px;
+            font-size: {self.input_font_size}px;
         }}
         QTableWidget {{
             background-color: #ffffff;
             border: 1px solid #ddd;
             border-radius: 4px;
-            font-size: {base_font_size+5}px;
+            font-size: {self.table_font_size}px;
         }}
         QHeaderView::section {{
             background-color: #f0f0f0;
             padding: 4px;
             border: 1px solid #ddd;
-            font-size: {base_font_size}px;
+            font-size: {self.table_font_size}px;
         }}
         """
         self.setStyleSheet(style_sheet)
         self.adjust_font_size()
-
-    def resizeEvent(self, event):
-        self.adjust_font_size()
-        margin = 5
-        bottom_margin = 20
-        self.grid_layout_widget.setGeometry(margin, margin, int(self.width() * 0.8) - margin, int(self.height() * 0.8) - margin)
-        self.grid_layout_widget_2.setGeometry(int(self.width() * 0.8) + margin, margin, int(self.width() * 0.2) - margin, int(self.height() * 0.8) - margin)
-        self.grid_layout_widget_3.setGeometry(margin, int(self.height() * 0.8) + margin, int(self.width() * 0.8) - margin, int(self.height() * 0.2) - bottom_margin)
-        self.grid_layout_widget_6.setGeometry(int(self.width() * 0.8) + margin, int(self.height() * 0.8) + margin, int(self.width() * 0.2) - margin, int(self.height() * 0.2) - bottom_margin)
-        super(MainWindow, self).resizeEvent(event)
 
 if __name__ == "__main__":
     import sys
@@ -265,3 +319,4 @@ if __name__ == "__main__":
     main_window.show()
     main_window.showMaximized()  # Maximize the window by default
     sys.exit(app.exec_())
+

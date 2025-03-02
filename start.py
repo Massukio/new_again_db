@@ -56,6 +56,7 @@ class MainWindow(QtWidgets.QMainWindow, UiMainWindow):
             self.table_handler = TableViewHandler(
                 self.table_view, self.plate_line_edit, self.plate_line_edit2, self.search_combo_box)
             self.table_handler.load_data()  # Ensure data is loaded and columns are resized
+            self.table_view.sortByColumn(0, QtCore.Qt.AscendingOrder)  # Sort by the first column in ascending order
         except sqlite3.OperationalError as e:
             logger.error(f"Database error: {e}")
             QtWidgets.QMessageBox.critical(

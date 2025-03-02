@@ -26,7 +26,7 @@ def get_all_plate_info() -> list:
     """Get all plate info from the database."""
     conn = get_connection()
     cursor = conn.cursor()
-    cursor.execute('SELECT part1, part2, phone_number, note FROM plate_info')
+    cursor.execute('SELECT part1, part2, phone_number, note FROM plate_info ORDER BY part1 ASC, part2 ASC')
     data = cursor.fetchall()
     conn.close()
     return [(f"{row[0]}-{row[1]}", row[2], row[3]) for row in data]

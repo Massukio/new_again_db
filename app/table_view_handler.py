@@ -22,7 +22,16 @@ class TableViewHandler:
         for row, (plate, info) in enumerate(data.items()):
             self.table_view.setItem(row, 0, QtWidgets.QTableWidgetItem(plate))
             self.table_view.setItem(row, 1, QtWidgets.QTableWidgetItem(info["phone_number"]))
-            self.table_view.setItem(row, 2, QtWidgets.QTableWidgetItem(info["note"]))
+            note_item = QtWidgets.QTableWidgetItem(info["note"])
+            note_item.setToolTip(f"<span style='font-size: 14pt;'>{info['note']}</span>")  # Add tooltip with larger font
+            self.table_view.setItem(row, 2, note_item)
+
+    def update_row(self, row, plate, phone_number, note):
+        self.table_view.setItem(row, 0, QtWidgets.QTableWidgetItem(plate))
+        self.table_view.setItem(row, 1, QtWidgets.QTableWidgetItem(phone_number))
+        note_item = QtWidgets.QTableWidgetItem(note)
+        note_item.setToolTip(f"<span style='font-size: 14pt;'>{note}</span>")  # Update tooltip with larger font
+        self.table_view.setItem(row, 2, note_item)
 
     def filter_table(self):
         part1_filter_text = phone_filter_text = \

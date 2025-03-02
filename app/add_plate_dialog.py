@@ -107,6 +107,8 @@ class AddPlateDialog(QtWidgets.QDialog):
         self.button_box.rejected.connect(self.reject)
         self.main_layout.addWidget(self.button_box)
 
+        self.apply_modern_style()
+
     def resizeEvent(self, event):
         self.adjust_font_size()
         super(AddPlateDialog, self).resizeEvent(event)
@@ -152,3 +154,40 @@ class AddPlateDialog(QtWidgets.QDialog):
         sender.blockSignals(True)
         sender.setText(text.upper())
         sender.blockSignals(False)
+
+    def apply_modern_style(self):
+        base_font_size = 18  # Default base font size
+        style_sheet = f"""
+        QDialog {{
+            background-color: #f0f0f0;
+            font-family: 'Microsoft YaHei', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-size: {base_font_size}px;
+            color: #333;
+        }}
+        QLineEdit {{
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: {base_font_size+5}px;
+        }}
+        QLabel {{
+            font-size: {base_font_size}px;
+            color: #333;
+        }}
+        QPushButton {{
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            text-align: center;
+            text-decoration: none;
+            font-size: {base_font_size}px;
+            margin: 4px 2px;
+            border-radius: 8px;
+        }}
+        QPushButton:hover {{
+            background-color: #45a049;
+        }}
+        """
+        self.setStyleSheet(style_sheet)
+        self.adjust_font_size()

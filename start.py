@@ -17,6 +17,7 @@ class MainWindow(QtWidgets.QMainWindow, UiMainWindow):
         super(MainWindow, self).__init__(parent)
         self.setup_ui(self)
         self.adjust_window_size()
+        self.apply_modern_style()
         self.add_button.clicked.connect(self.show_add_plate_dialog)
         self.modify_button.clicked.connect(self.modify_selected_row)
         self.connect_button.clicked.connect(self.check_database_location)
@@ -170,9 +171,7 @@ class MainWindow(QtWidgets.QMainWindow, UiMainWindow):
             if dialog.exec_() == QtWidgets.QDialog.Accepted:
                 new_part1, new_part2, new_phone_number, new_note = dialog.get_plate_info()
                 update_plate_info(new_part1, new_part2, new_phone_number, new_note)
-                self.table_view.setItem(selected_row, 0, QtWidgets.QTableWidgetItem(f"{new_part1}-{new_part2}"))
-                self.table_view.setItem(selected_row, 1, QtWidgets.QTableWidgetItem(new_phone_number))
-                self.table_view.setItem(selected_row, 2, QtWidgets.QTableWidgetItem(new_note))
+                self.table_handler.update_row(selected_row, f"{new_part1}-{new_part2}", new_phone_number, new_note)
 
     def backup_database(self):
         options = QtWidgets.QFileDialog.Options()
@@ -196,9 +195,67 @@ class MainWindow(QtWidgets.QMainWindow, UiMainWindow):
         palette.setBrush(QtGui.QPalette.Window, QtGui.QBrush(gradient))
         self.setPalette(palette)
 
+    def apply_modern_style(self):
+        base_font_size = 18  # Default base font size
+        style_sheet = f"""
+        QWidget {{
+            font-family: 'Microsoft YaHei', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-size: {base_font_size}px;
+            color: #333;
+        }}
+        QMainWindow {{
+            background-color: #f0f0f0;
+        }}
+        QPushButton {{
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            text-align: center;
+            text-decoration: none;
+            font-size: {base_font_size}px;
+            margin: 4px 2px;
+            border-radius: 8px;
+        }}
+        QPushButton:hover {{
+            background-color: #45a049;
+        }}
+        QLineEdit {{
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: {base_font_size+7}px;
+        }}
+        QTableWidget {{
+            background-color: #ffffff;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: {base_font_size+5}px;
+        }}
+        QHeaderView::section {{
+            background-color: #f0f0f0;
+            padding: 4px;
+            border: 1px solid #ddd;
+            font-size: {base_font_size}px;
+        }}
+        """
+        self.setStyleSheet(style_sheet)
+        self.adjust_font_size()
+
+    def resizeEvent(self, event):
+        self.adjust_font_size()
+        margin = 5
+        bottom_margin = 20
+        self.grid_layout_widget.setGeometry(margin, margin, int(self.width() * 0.8) - margin, int(self.height() * 0.8) - margin)
+        self.grid_layout_widget_2.setGeometry(int(self.width() * 0.8) + margin, margin, int(self.width() * 0.2) - margin, int(self.height() * 0.8) - margin)
+        self.grid_layout_widget_3.setGeometry(margin, int(self.height() * 0.8) + margin, int(self.width() * 0.8) - margin, int(self.height() * 0.2) - bottom_margin)
+        self.grid_layout_widget_6.setGeometry(int(self.width() * 0.8) + margin, int(self.height() * 0.8) + margin, int(self.width() * 0.2) - margin, int(self.height() * 0.2) - bottom_margin)
+        super(MainWindow, self).resizeEvent(event)
+
 if __name__ == "__main__":
     import sys
     app = QtWidgets.QApplication(sys.argv)
     main_window = MainWindow()
     main_window.show()
+    main_window.showMaximized()  # Maximize the window by default
     sys.exit(app.exec_())

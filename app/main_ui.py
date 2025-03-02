@@ -187,6 +187,7 @@ class UiMainWindow(object):
         self.action_about.triggered.connect(self.show_about_dialog)
 
         self.set_background_color()
+        self.apply_modern_style()
 
     def retranslate_ui(self, main_window):
         _translate = QtCore.QCoreApplication.translate
@@ -246,7 +247,58 @@ class UiMainWindow(object):
     def set_background_color(self):
         gradient = QtGui.QLinearGradient(0, 0, 0, self.central_widget.height())
         gradient.setColorAt(0.0, QtGui.QColor(173, 216, 230))  # Light Blue
-        gradient.setColorAt(1.0, QtGui.QColor(135, 206, 250))  # Light Sky Blues
+        gradient.setsColorAt(1.0, QtGui.QColor(135, 206, 250))  # Light Sky Blue
         palette = QtGui.QPalette()
         palette.setBrush(QtGui.QPalette.Window, QtGui.QBrush(gradient))
         self.central_widget.setPalette(palette)
+
+    def apply_modern_style(self):
+        base_font_size = 18  # Default base font size
+        style_sheet = f"""
+        QWidget {{
+            font-family: 'Microsoft YaHei', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-size: {base_font_size}px;
+            color: #333;
+        }}
+        QMainWindow {{
+            background-color: #f0f0f0;
+        }}
+        QPushButton {{
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            text-align: center;
+            text-decoration: none;
+            font-size: {base_font_size}px;
+            margin: 4px 2px;
+            border-radius: 8px;
+        }}
+        QPushButton:hover {{
+            background-color: #45a049;
+        }}
+        QLineEdit {{
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: {base_font_size+7}px;
+        }}
+        QTableWidget {{
+            background-color: #ffffff;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: {base_font_size+5}px;
+        }}
+        QHeaderView::section {{
+            background-color: #f0f0f0;
+            padding: 4px;
+            border: 1px solid #ddd;
+            font-size: {base_font_size}px;
+        }}
+        """
+        self.central_widget.setStyleSheet(style_sheet)
+        self.adjust_font_size()
+
+    def resizeEvent(self, event):
+        self.adjust_font_size()
+        super(UiMainWindow, self).resizeEvent(event)

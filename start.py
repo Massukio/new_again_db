@@ -17,9 +17,9 @@ CONFIG_FILE = "config.json"
 class MainWindow(QtWidgets.QMainWindow, UiMainWindow):
     def __init__(self, parent=None):
         super(MainWindow, self).__init__(parent)
-        self.button_font_size = 18  # Initialize button font size
-        self.table_font_size = 18  # Initialize table font size
-        self.input_font_size = 25  # Initialize input field font size
+        self.button_font_size = 20  # Initialize button font size
+        self.table_font_size = 25  # Initialize table font size
+        self.input_font_size = 30  # Initialize input field font size
         self.load_font_size_config()  # Load font size config before applying style
         self.setup_ui(self)
         self.adjust_window_size()
@@ -212,9 +212,9 @@ class MainWindow(QtWidgets.QMainWindow, UiMainWindow):
         if os.path.exists(CONFIG_FILE):
             with open(CONFIG_FILE, 'r') as file:
                 config = json.load(file)
-                self.button_font_size = config.get("button_font_size", 18)
-                self.table_font_size = config.get("table_font_size", 18)
-                self.input_font_size = config.get("input_font_size", 25)
+                self.button_font_size = config.get("button_font_size", self.button_font_size)
+                self.table_font_size = config.get("table_font_size", self.table_font_size)
+                self.input_font_size = config.get("input_font_size", self.input_font_size)
 
     def save_font_size_config(self):
         config = {

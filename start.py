@@ -19,7 +19,7 @@ class MainWindow(QtWidgets.QMainWindow, UiMainWindow):
         super(MainWindow, self).__init__(parent)
         self.button_font_size = 18  # Initialize button font size
         self.table_font_size = 18  # Initialize table font size
-        self.input_font_size = 18  # Initialize input field font size
+        self.input_font_size = 25  # Initialize input field font size
         self.load_font_size_config()  # Load font size config before applying style
         self.setup_ui(self)
         self.adjust_window_size()
@@ -214,11 +214,7 @@ class MainWindow(QtWidgets.QMainWindow, UiMainWindow):
                 config = json.load(file)
                 self.button_font_size = config.get("button_font_size", 18)
                 self.table_font_size = config.get("table_font_size", 18)
-                self.input_font_size = config.get("input_font_size", 18)
-        else:
-            self.button_font_size = 18
-            self.table_font_size = 18
-            self.input_font_size = 18
+                self.input_font_size = config.get("input_font_size", 25)
 
     def save_font_size_config(self):
         config = {

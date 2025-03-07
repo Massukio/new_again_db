@@ -26,15 +26,17 @@ class TableViewHandler:
     def _populate_table(self, data):
         self.table_view.setRowCount(len(data))
         for row, (plate, phone_number, note) in enumerate(data):
+            formatted_phone_number = self._format_phone_number(phone_number)
             self.table_view.setItem(row, 0, QtWidgets.QTableWidgetItem(plate))
-            self.table_view.setItem(row, 1, QtWidgets.QTableWidgetItem(phone_number))
+            self.table_view.setItem(row, 1, QtWidgets.QTableWidgetItem(formatted_phone_number))
             note_item = QtWidgets.QTableWidgetItem(note)
             note_item.setToolTip(f"<span style='font-size: 14pt;'>{note}</span>")  # Add tooltip with larger font
             self.table_view.setItem(row, 2, note_item)
 
     def update_row(self, row, plate, phone_number, note):
+        formatted_phone_number = self._format_phone_number(phone_number)
         self.table_view.setItem(row, 0, QtWidgets.QTableWidgetItem(plate))
-        self.table_view.setItem(row, 1, QtWidgets.QTableWidgetItem(phone_number))
+        self.table_view.setItem(row, 1, QtWidgets.QTableWidgetItem(formatted_phone_number))
         note_item = QtWidgets.QTableWidgetItem(note)
         note_item.setToolTip(f"<span style='font-size: 14pt;'>{note}</span>")  # Update tooltip with larger font
         self.table_view.setItem(row, 2, note_item)
@@ -57,3 +59,15 @@ class TableViewHandler:
             part1, part2 = plate_info.split('-')
             delete_plate_info(part1, part2)
             self.table_view.removeRow(selected_row)
+
+    def _format_phone_number(self, phone_number):
+        if '-' in phone_number:
+            return phone_number  # Skip formatting if '-' already present
+        if len(phone_number) == 10:
+            return f"{phone_number[:4]}-{phone_number[4:7]}-{phone_number[7:]}"
+        elif len(phone_number) == 7:
+            return f"{phone_number[:3]}-{phone_number[3:]}"
+        elif len(phone_number) == 9:
+            return f"{phone_number[:2]}-{phone_number[2:5]}-{phone_number[5:]}"
+        return phone_number
+

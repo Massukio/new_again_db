@@ -171,7 +171,7 @@ class MainWindow(QtWidgets.QMainWindow, UiMainWindow):
         selected_row = self.table_view.currentRow()
         if selected_row >= 0:
             plate_info = self.table_view.item(selected_row, 0).text()
-            phone_number = self.table_view.item(selected_row, 1).text()
+            phone_number = self.table_view.item(selected_row, 1).text().replace('-', '')
             note = self.table_view.item(selected_row, 2).text()
             part1, part2 = plate_info.split('-')
 
@@ -190,15 +190,36 @@ class MainWindow(QtWidgets.QMainWindow, UiMainWindow):
         options = QtWidgets.QFileDialog.Options()
         options |= QtWidgets.QFileDialog.DontUseNativeDialog
         current_date = datetime.now().strftime("%Y%m%d")
-        default_filename = f"{current_date}_backup_database.db"
-        file_path, _ = QtWidgets.QFileDialog.getSaveFileName(
-            None, "Backup Database", default_filename, "SQLite Database Files (*.db);;All Files (*)", options=options)
-        if file_path:
-            try:
-                shutil.copyfile(DATABASE_FILE, file_path)
-                QtWidgets.QMessageBox.information(None, '成功', '資料庫備份成功。', QtWidgets.QMessageBox.Ok)
-            except Exception as e:
-                QtWidgets.QMessageBox.critical(None, '錯誤', f'資料庫備份失敗: {e}', QtWidgets.QMessageBox.Ok)
+        
+        # Ask user to choose the backup file type
+        file_type, ok = QtWidgets.QInputDialog.getItem(
+            self, "選擇備份文件類型", "備份文件類型:", ["SQLite Database Files (*.db)", "SQL Dump Files (*.sql)"], 0, False)
+        
+        if ok and file_type:
+            if "db" in file_type:
+                default_filename = f"{current_date}_backup_database.db"
+                file_path, _ = QtWidgets.QFileDialog.getSaveFileName(
+                    None, "Backup Database", default_filename, "SQLite Database Files (*.db);;All Files (*)", options=options)
+                if file_path:
+                    try:
+                        shutil.copyfile(DATABASE_FILE, file_path)
+                        QtWidgets.QMessageBox.information(None, '成功', '資料庫備份成功。', QtWidgets.QMessageBox.Ok)
+                    except Exception as e:
+                        QtWidgets.QMessageBox.critical(None, '錯誤', f'資料庫備份失敗: {e}', QtWidgets.QMessageBox.Ok)
+            elif "sql" in file_type:
+                default_filename = f"{current_date}_backup_database.sql"
+                file_path, _ = QtWidgets.QFileDialog.getSaveFileName(
+                    None, "Backup Database", default_filename, "SQL Dump Files (*.sql);;All Files (*)", options=options)
+                if file_path:
+                    try:
+                        conn = sqlite3.connect(DATABASE_FILE)
+                        with open(file_path, 'w', encoding='utf-8') as f:
+                            for line in conn.iterdump():
+                                f.write('%s\n' % line)
+                        conn.close()
+                        QtWidgets.QMessageBox.information(None, '成功', '資料庫備份成功。', QtWidgets.QMessageBox.Ok)
+                    except Exception as e:
+                        QtWidgets.QMessageBox.critical(None, '錯誤', f'資料庫備份失敗: {e}', QtWidgets.QMessageBox.Ok)
 
     def set_background_color(self):
         gradient = QtGui.QLinearGradient(0, 0, 0, self.height())
@@ -314,5 +335,9 @@ if __name__ == "__main__":
     main_window = MainWindow()
     main_window.show()
     main_window.showMaximized()  # Maximize the window by default
-    sys.exit(app.exec_())
+    
+    # Ensure the application exits cleanly
+    exit_code = app.exec_()
+    main_window.close()  # Ensure the main window is closed
+    sys.exit(exit_code)
 

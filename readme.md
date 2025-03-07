@@ -61,7 +61,7 @@ To build the application into a standalone executable using PyInstaller, follow 
 
 2. Create a PyInstaller spec file:
     ```sh
-    pyinstaller --name new_again_db --onefile start.py
+    pyinstaller --name new_again_db --onefile --noconsole start.py
     ```
 
 3. Build the executable:

@@ -42,7 +42,7 @@ class UiMainWindow(object):
         self.table_view.setSelectionMode(QtWidgets.QTableView.SingleSelection)
         self.table_view.verticalHeader().setVisible(False)
         self.table_view.setEditTriggers(QtWidgets.QAbstractItemView.NoEditTriggers)
-        self.grid_layout.addWidget(self.table_view, 1, 0, 1, 1)
+        self.grid_layout.addWidget(self.table_view, 0, 0, 1, 1)
 
         self.grid_layout_widget_2 = QtWidgets.QWidget(self.central_widget)
         self.grid_layout_widget_2.setGeometry(QtCore.QRect(750 + margin, margin, 200 - margin, 400 - margin))

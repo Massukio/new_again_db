@@ -44,15 +44,6 @@ class UiMainWindow(object):
         self.table_view.setEditTriggers(QtWidgets.QAbstractItemView.NoEditTriggers)
         self.grid_layout.addWidget(self.table_view, 1, 0, 1, 1)
 
-        self.title_label = QtWidgets.QLabel(self.grid_layout_widget)
-        size_policy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Fixed)
-        size_policy.setHeightForWidth(self.title_label.sizePolicy().hasHeightForWidth())
-        self.title_label.setSizePolicy(size_policy)
-        self.title_label.setFont(font)
-        self.title_label.setAlignment(QtCore.Qt.AlignCenter)
-        self.title_label.setObjectName("title_label")
-        self.grid_layout.addWidget(self.title_label, 0, 0, 1, 1)
-
         self.grid_layout_widget_2 = QtWidgets.QWidget(self.central_widget)
         self.grid_layout_widget_2.setGeometry(QtCore.QRect(750 + margin, margin, 200 - margin, 400 - margin))
         self.grid_layout_widget_2.setObjectName("grid_layout_widget_2")
@@ -195,7 +186,6 @@ class UiMainWindow(object):
     def retranslate_ui(self, main_window):
         _translate = QtCore.QCoreApplication.translate
         main_window.setWindowTitle(_translate("MainWindow", "再新洗車資料庫"))
-        self.title_label.setText(_translate("MainWindow", "若要查詢請按瀏覽"))
         self.modify_button.setText(_translate("MainWindow", "修改所選資料"))
         self.add_button.setText(_translate("MainWindow", "新增資料"))
         self.connect_button.setText(_translate("MainWindow", "連接資料庫"))

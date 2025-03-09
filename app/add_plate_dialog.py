@@ -1,11 +1,12 @@
 from PyQt5 import QtWidgets, QtCore, QtGui
 from app.logger import logger
-from db.database import plate_exists, plate_and_phone_exists, add_plate_info
+from db.database import plate_exists, plate_and_phone_exists, add_plate_info, plate_and_phone_note_exists
 import sqlite3
 
 class AddPlateDialog(QtWidgets.QDialog):
-    def __init__(self, parent=None):
+    def __init__(self, parent=None, plate_type='add'):
         super(AddPlateDialog, self).__init__(parent)
+        self.plate_type = plate_type
         self.setWindowTitle("新增車牌資料")
         self.resize(801, 267)
 
@@ -144,29 +145,43 @@ class AddPlateDialog(QtWidgets.QDialog):
         """Handle the accept event."""
         plate_info = self.get_plate_info()
         logger.debug(f"Plate Info: {plate_info}")
-        if plate_and_phone_exists(plate_info[0], plate_info[1], plate_info[2]):
-            error_dialog = QtWidgets.QMessageBox()
-            error_dialog.setIcon(QtWidgets.QMessageBox.Critical)
-            error_dialog.setWindowTitle("錯誤")
-            error_dialog.setText("此車牌號碼和電話號碼已存在。")
-            error_dialog.addButton("確定", QtWidgets.QMessageBox.AcceptRole)
-            error_dialog.exec_()
-        elif plate_exists(plate_info[0], plate_info[1]):
-            warning_dialog = QtWidgets.QMessageBox()
-            warning_dialog.setIcon(QtWidgets.QMessageBox.Warning)
-            warning_dialog.setWindowTitle("警告")
-            warning_dialog.setText("此車牌號碼已存在但電話號碼不同。是否繼續保存？")
-            yes_button = warning_dialog.addButton("是", QtWidgets.QMessageBox.YesRole)
-            no_button = warning_dialog.addButton("否", QtWidgets.QMessageBox.NoRole)
-            warning_dialog.exec_()
-            if warning_dialog.clickedButton() == yes_button:
+
+        if self.plate_type == 'add':
+            if plate_and_phone_exists(plate_info[0], plate_info[1], plate_info[2]):
+                error_dialog = QtWidgets.QMessageBox()
+                error_dialog.setIcon(QtWidgets.QMessageBox.Critical)
+                error_dialog.setWindowTitle("錯誤")
+                error_dialog.setText("此車牌號碼和電話號碼已存在。")
+                error_dialog.addButton("確定", QtWidgets.QMessageBox.AcceptRole)
+                error_dialog.exec_()
+            elif plate_exists(plate_info[0], plate_info[1]):
+                warning_dialog = QtWidgets.QMessageBox()
+                warning_dialog.setIcon(QtWidgets.QMessageBox.Warning)
+                warning_dialog.setWindowTitle("警告")
+                warning_dialog.setText("此車牌號碼已存在但電話號碼不同。是否繼續保存？")
+                yes_button = warning_dialog.addButton("是", QtWidgets.QMessageBox.YesRole)
+                no_button = warning_dialog.addButton("否", QtWidgets.QMessageBox.NoRole)
+                warning_dialog.exec_()
+                if warning_dialog.clickedButton() == yes_button:
+                    add_plate_info(plate_info[0], plate_info[1], plate_info[2], plate_info[3])
+                    self.done(QtWidgets.QDialog.Accepted)
+                else:
+                    self.done(QtWidgets.QDialog.Rejected)
+            else:
                 add_plate_info(plate_info[0], plate_info[1], plate_info[2], plate_info[3])
                 self.done(QtWidgets.QDialog.Accepted)
+
+        else:  # plate_type == 'edit'
+            if plate_and_phone_note_exists(plate_info[0], plate_info[1], plate_info[2], plate_info[3]):
+                error_dialog = QtWidgets.QMessageBox()
+                error_dialog.setIcon(QtWidgets.QMessageBox.Critical)
+                error_dialog.setWindowTitle("錯誤")
+                error_dialog.setText("此車牌號碼、電話號碼與相同備註已經存在。")
+                error_dialog.addButton("確定", QtWidgets.QMessageBox.AcceptRole)
+                error_dialog.exec_()
             else:
-                self.done(QtWidgets.QDialog.Rejected)
-        else:
-            add_plate_info(plate_info[0], plate_info[1], plate_info[2], plate_info[3])
-            self.done(QtWidgets.QDialog.Accepted)
+                add_plate_info(plate_info[0], plate_info[1], plate_info[2], plate_info[3])
+                self.done(QtWidgets.QDialog.Accepted)
 
     def reject(self) -> None:
         """Handle the reject event."""

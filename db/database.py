@@ -137,3 +137,16 @@ def plate_and_phone_exists(part1: str, part2: str, phone_number: str) -> bool:
     exists = cursor.fetchone()[0] > 0
     conn.close()
     return exists
+
+def plate_and_phone_note_exists(part1: str, part2: str, phone_number: str, note: str) -> bool:
+    """Check if both plate number and phone number are duplicated in the database."""
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute('''
+        SELECT COUNT(*)
+        FROM plate_info
+        WHERE part1 = ? AND part2 = ? AND phone_number = ? AND note = ?
+    ''', (part1.upper(), part2.upper(), phone_number, note))
+    exists = cursor.fetchone()[0] > 0
+    conn.close()
+    return exists

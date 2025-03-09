@@ -16,7 +16,6 @@ class TableViewHandler:
     def load_data(self):
         data = get_all_plate_info()
         self._populate_table(data)
-        self.table_view.resizeColumnsToContents()  # Ensure columns are resized to fit content
         self.table_view.resizeRowsToContents()  # Ensure rows are resized to fit content
         self._set_minimum_column_widths()
 

@@ -107,6 +107,22 @@ class MainWindow(QtWidgets.QMainWindow, UiMainWindow):
         else:
             super(MainWindow, self).keyPressEvent(event)
 
+    def reset_table_view(self):
+        # Store current column widths
+        column_widths = [self.table_view.columnWidth(i) for i in range(self.table_view.columnCount())]
+        
+        self.plate_line_edit.clear()
+        self.plate_line_edit2.clear()
+        self.search_combo_box.setCurrentIndex(0)
+        self.table_handler.load_data()
+        for row in range(self.table_view.rowCount()):
+            self.table_view.setRowHidden(row, False)
+        self.plate_line_edit.setFocus()
+        
+        # Restore column widths
+        for i, width in enumerate(column_widths):
+            self.table_view.setColumnWidth(i, width)
+
     def show_add_plate_dialog(self):
         dialog = AddPlateDialog(self, 'add')
         while dialog.exec_() == QtWidgets.QDialog.Accepted:

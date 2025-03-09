@@ -13,7 +13,7 @@ def generate_unique_plate_infos(num):
         plate_infos.add((part1, part2))
     return list(plate_infos)
 
-def generate_data(num_records=100000, db_path='database.db'):
+def generate_data(num_records=10000, db_path='database.db'):
     unique_plate_infos = generate_unique_plate_infos(num_records // 2)
     data = []
     for part1, part2 in unique_plate_infos:

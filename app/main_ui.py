@@ -180,6 +180,8 @@ class UiMainWindow(object):
         self.view_all_button.clicked.connect(self.reset_table_view)
         self.action_about.triggered.connect(self.show_about_dialog)
 
+        self.plate_line_edit.returnPressed.connect(self.focus_plate_line_edit2)
+
         self.set_background_color()
         self.apply_modern_style()
 
@@ -296,3 +298,6 @@ class UiMainWindow(object):
     def resizeEvent(self, event):
         self.adjust_font_size()
         super(UiMainWindow, self).resizeEvent(event)
+
+    def focus_plate_line_edit2(self):
+        self.plate_line_edit2.setFocus()

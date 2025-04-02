@@ -19,10 +19,8 @@ class MainWindow:
         self.central_widget.setObjectName('central_widget')
         self.window.setCentralWidget(self.central_widget)
 
-        # Setup grid and buttons
-        self.setup_grids()
-        self.setup_buttons()
-        self.setup_inputs()
+        # Setup components
+        self.setup()
 
     def setup_grids(self):
         self.table_widget = QtWidgets.QWidget(self.central_widget)
@@ -86,19 +84,46 @@ class MainWindow:
         self.search_combo_box.setObjectName("search_combo_box")
         self.search_combo_box.addItem("車牌查詢")
         self.search_combo_box.addItem("電話查詢")
+        self.search_combo_box.setSizePolicy(
+            QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
         self.input_grid.addWidget(self.search_combo_box, 0, 0, 1, 1)
 
         self.plate_input1 = QtWidgets.QLineEdit(self.input_widget)
         self.plate_input1.setObjectName("plate_input1")
+        self.plate_input1.setSizePolicy(
+            QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
         self.input_grid.addWidget(self.plate_input1, 0, 1, 1, 1)
 
         self.plate_input2 = QtWidgets.QLineEdit(self.input_widget)
         self.plate_input2.setObjectName("plate_input2")
+        self.plate_input2.setSizePolicy(
+            QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
         self.input_grid.addWidget(self.plate_input2, 0, 2, 1, 1)
+
+        # Adjust the stretch factors to evenly distribute the items
+        self.input_grid.setColumnStretch(0, 1)
+        self.input_grid.setColumnStretch(1, 3)
+        self.input_grid.setColumnStretch(2, 3)
+
+    def setup_tables(self):
+        self.table_view = QtWidgets.QTableWidget(self.table_widget)
+        self.table_view.horizontalHeader().setVisible(True)
+        self.table_view.horizontalHeader().setSectionResizeMode(
+            QtWidgets.QHeaderView.Stretch)
+        self.table_view.verticalHeader().setVisible(False)
+        self.table_view.setAlternatingRowColors(True)
+        self.table_view.setColumnCount(3)
+        self.table_view.setHorizontalHeaderLabels(["車牌號碼", "電話號碼", "備註"])
+        self.table_view.setSelectionBehavior(QtWidgets.QTableView.SelectRows)
+        self.table_view.setSelectionMode(QtWidgets.QTableView.SingleSelection)
+        self.table_grid.addWidget(self.table_view, 0, 0, 1, 1)
 
 
     def setup(self):
-        pass
+        self.setup_grids()
+        self.setup_buttons()
+        self.setup_inputs()
+        self.setup_tables()
 
 
     def start(self):

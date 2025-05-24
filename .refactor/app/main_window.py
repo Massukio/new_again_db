@@ -1,5 +1,6 @@
 """
 Main window implementation for the refactored New Again application.
+This is a standalone implementation that doesn't depend on the original codebase.
 """
 
 import os
@@ -9,14 +10,8 @@ import shutil
 from datetime import datetime
 from PyQt5 import QtCore, QtGui, QtWidgets
 
-# Import original code
-from app.main_ui import UiMainWindow
-from app.add_plate_dialog import AddPlateDialog
-from app.table_view_handler import TableViewHandler
-from db.database import add_plate_info, get_all_plate_info, update_plate_info, delete_plate_info
-from db.initialize_db import initialize_database
-
-# Import enhanced logger
+# Import refactored standalone modules
+from .ui_main_window import UiMainWindow
 from ..utils.logger import logger
 
 # Import refactored implementations
@@ -74,6 +69,8 @@ class MainWindow(QtWidgets.QMainWindow, UiMainWindow):
 
     def pre_check_database(self):
         """Check if the database exists and create it if necessary."""
+        from ..db.init import initialize_database
+
         if not os.path.exists(self.DATABASE_FILE):
             initialize_database()
             QtWidgets.QMessageBox.information(
@@ -99,9 +96,7 @@ class MainWindow(QtWidgets.QMainWindow, UiMainWindow):
         """Initialize the table view handler with the refactored implementation."""
         self.table_handler = RefactoredTableViewHandler(
             self.table_view,
-            self.plate_filter_line_edit,
-            self.plate_filter_line_edit2,
-            self.search_combo_box
+            self.table_font_size
         )
 
     def load_font_size_config(self):

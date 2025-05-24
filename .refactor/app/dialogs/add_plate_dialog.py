@@ -1,29 +1,29 @@
 """
 Add/Modify plate dialog for the refactored implementation.
-This module extends the original AddPlateDialog with improvements.
+This is a standalone implementation that doesn't depend on the original codebase.
 """
 
-from PyQt5 import QtWidgets
-
-# Import original code
-from app.add_plate_dialog import AddPlateDialog as OriginalAddPlateDialog
-from app.logger import logger
-from db.database import plate_exists, plate_and_phone_exists, add_plate_info, plate_and_phone_note_exists
+from PyQt5 import QtWidgets, QtCore, QtGui
 
 # Import refactored implementations
-from ..utils.formatter import TextFormatter
-from ..db.database_manager import DatabaseManager
+from ...utils.formatter import TextFormatter
+from ...utils.logger import logger
+from ...db.database_manager import DatabaseManager
 
 
-class RefactoredAddPlateDialog(OriginalAddPlateDialog):
+class RefactoredAddPlateDialog(QtWidgets.QDialog):
     """
-    Enhanced dialog for adding or modifying plate information.
-    Extends the original dialog with improved validation and user feedback.
+    Standalone dialog for adding or modifying plate information.
+    Complete implementation without dependencies on the original codebase.
     """
 
     def __init__(self, parent=None, plate_type='add'):
         """Initialize the dialog with the specified plate type."""
-        super(RefactoredAddPlateDialog, self).__init__(parent, plate_type)
+        super(RefactoredAddPlateDialog, self).__init__(parent)
+
+        self.plate_type = plate_type
+        self.db_manager = DatabaseManager()
+        self.setup_ui()
 
         # Update window title based on operation
         if plate_type == 'add':
@@ -31,159 +31,238 @@ class RefactoredAddPlateDialog(OriginalAddPlateDialog):
         else:
             self.setWindowTitle("修改車牌資料")
 
-        # Additional setup specific to refactored implementation
-        self._setup_additional_validation()
+        self.apply_modern_style()
 
-    def _setup_additional_validation(self):
-        """Set up additional validation for input fields."""
-        # Validate plate part 1 (letters)
-        self.plate_part1_line_edit.textChanged.connect(self._validate_plate_part1)
+    def setup_ui(self):
+        """Set up the UI components for the dialog."""
+        self.resize(801, 267)
 
-        # Validate plate part 2 (numbers)
-        self.plate_part2_line_edit.textChanged.connect(self._validate_plate_part2)
+        self.main_layout = QtWidgets.QVBoxLayout(self)
 
-        # Validate phone number
-        self.phone_line_edit.textChanged.connect(self._validate_phone_number)
+        # Plate number section
+        self.grid_layout_widget = QtWidgets.QWidget(self)
+        self.grid_layout = QtWidgets.QGridLayout(self.grid_layout_widget)
+        self.grid_layout.setContentsMargins(0, 0, 0, 0)
+        self.main_layout.addWidget(self.grid_layout_widget)
 
-    def _validate_plate_part1(self):
-        """Validate the first part of the plate number (typically letters)."""
-        text = self.plate_part1_line_edit.text().upper()
-        self.plate_part1_line_edit.setText(text)
+        self.plate_part1_line_edit = QtWidgets.QLineEdit(self.grid_layout_widget)
+        font = QtGui.QFont()
+        font.setPointSize(25)
+        font.setBold(True)
+        font.setWeight(75)
+        self.plate_part1_line_edit.setFont(font)
+        self.plate_part1_line_edit.setMaxLength(4)
+        self.plate_part1_line_edit.setAlignment(QtCore.Qt.AlignCenter)
+        self.plate_part1_line_edit.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
+        self.plate_part1_line_edit.textChanged.connect(self.convert_to_upper)
+        self.grid_layout.addWidget(self.plate_part1_line_edit, 1, 0, 1, 1)
 
-        # Set stylesheet based on validity
-        if text and not any(char.isalnum() for char in text):
-            self.plate_part1_line_edit.setStyleSheet("background-color: #ffcccc;")
+        self.label = QtWidgets.QLabel(self.grid_layout_widget)
+        font = QtGui.QFont()
+        font.setPointSize(20)
+        font.setBold(True)
+        font.setWeight(75)
+        self.label.setFont(font)
+        self.label.setAlignment(QtCore.Qt.AlignCenter)
+        self.label.setText("車牌號碼")
+        self.grid_layout.addWidget(self.label, 0, 0, 1, 2)
+
+        self.plate_part2_line_edit = QtWidgets.QLineEdit(self.grid_layout_widget)
+        font = QtGui.QFont()
+        font.setPointSize(25)
+        font.setBold(True)
+        font.setWeight(75)
+        self.plate_part2_line_edit.setFont(font)
+        self.plate_part2_line_edit.setMaxLength(4)
+        self.plate_part2_line_edit.setAlignment(QtCore.Qt.AlignCenter)
+        self.plate_part2_line_edit.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
+        self.plate_part2_line_edit.textChanged.connect(self.convert_to_upper)
+        self.grid_layout.addWidget(self.plate_part2_line_edit, 1, 1, 1, 1)
+
+        # Phone number section
+        self.grid_layout_widget_2 = QtWidgets.QWidget(self)
+        self.grid_layout_2 = QtWidgets.QGridLayout(self.grid_layout_widget_2)
+        self.grid_layout_2.setContentsMargins(0, 0, 0, 0)
+        self.main_layout.addWidget(self.grid_layout_widget_2)
+
+        self.phone_number_line_edit = QtWidgets.QLineEdit(self.grid_layout_widget_2)
+        font = QtGui.QFont()
+        font.setPointSize(25)
+        font.setBold(True)
+        font.setWeight(75)
+        self.phone_number_line_edit.setFont(font)
+        self.phone_number_line_edit.setMaxLength(10)
+        self.phone_number_line_edit.setAlignment(QtCore.Qt.AlignCenter)
+        self.phone_number_line_edit.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
+        self.phone_number_line_edit.setValidator(QtGui.QIntValidator())
+        self.grid_layout_2.addWidget(self.phone_number_line_edit, 1, 0, 1, 1)
+
+        self.label_2 = QtWidgets.QLabel(self.grid_layout_widget_2)
+        font = QtGui.QFont()
+        font.setPointSize(20)
+        font.setBold(True)
+        font.setWeight(75)
+        self.label_2.setFont(font)
+        self.label_2.setAlignment(QtCore.Qt.AlignCenter)
+        self.label_2.setText("電話號碼")
+        self.grid_layout_2.addWidget(self.label_2, 0, 0, 1, 1)
+
+        # Note section
+        self.grid_layout_widget_3 = QtWidgets.QWidget(self)
+        self.grid_layout_3 = QtWidgets.QGridLayout(self.grid_layout_widget_3)
+        self.grid_layout_3.setContentsMargins(0, 0, 0, 0)
+        self.main_layout.addWidget(self.grid_layout_widget_3)
+
+        self.note_line_edit = QtWidgets.QLineEdit(self.grid_layout_widget_3)
+        font = QtGui.QFont()
+        font.setPointSize(25)
+        font.setBold(True)
+        font.setWeight(75)
+        self.note_line_edit.setFont(font)
+        self.note_line_edit.setAlignment(QtCore.Qt.AlignCenter)
+        self.note_line_edit.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
+        self.grid_layout_3.addWidget(self.note_line_edit, 1, 0, 1, 1)
+
+        self.label_3 = QtWidgets.QLabel(self.grid_layout_widget_3)
+        font = QtGui.QFont()
+        font.setPointSize(20)
+        font.setBold(True)
+        font.setWeight(75)
+        self.label_3.setFont(font)
+        self.label_3.setAlignment(QtCore.Qt.AlignCenter)
+        self.label_3.setText("備註")
+        self.grid_layout_3.addWidget(self.label_3, 0, 0, 1, 1)
+
+        # Button box
+        self.button_box = QtWidgets.QDialogButtonBox(self)
+        self.button_box.setOrientation(QtCore.Qt.Horizontal)
+        self.button_box.setStandardButtons(QtWidgets.QDialogButtonBox.Cancel | QtWidgets.QDialogButtonBox.Ok)
+        self.button_box.button(QtWidgets.QDialogButtonBox.Ok).setText("確定")
+        self.button_box.button(QtWidgets.QDialogButtonBox.Cancel).setText("取消")
+        self.button_box.accepted.connect(self.accept)
+        self.button_box.rejected.connect(self.reject)
+        self.main_layout.addWidget(self.button_box)
+
+    def resizeEvent(self, event):
+        """Handle resize events to adjust font sizes."""
+        self.adjust_font_size()
+        super(RefactoredAddPlateDialog, self).resizeEvent(event)
+
+    def adjust_font_size(self):
+        """Adjust font sizes based on dialog size."""
+        base_font_size = 30
+        font_size = max(base_font_size, int(self.height() * 0.03))
+        font = QtGui.QFont()
+        font.setPointSize(font_size)
+        self.plate_part1_line_edit.setFont(font)
+        self.plate_part2_line_edit.setFont(font)
+        self.phone_number_line_edit.setFont(font)
+        self.note_line_edit.setFont(font)
+
+    def keyPressEvent(self, event: QtGui.QKeyEvent) -> None:
+        """Handle key press events."""
+        if event.key() in (QtCore.Qt.Key_Return, QtCore.Qt.Key_Enter):
+            focus_widget = self.focusWidget()
+            if focus_widget == self.phone_number_line_edit:
+                self.note_line_edit.setFocus()
+            elif focus_widget == self.note_line_edit:
+                self.accept()
+            elif isinstance(focus_widget, QtWidgets.QLineEdit):
+                self.focusNextChild()
         else:
-            self.plate_part1_line_edit.setStyleSheet("")
+            super(RefactoredAddPlateDialog, self).keyPressEvent(event)
 
-    def _validate_plate_part2(self):
-        """Validate the second part of the plate number (typically numbers)."""
-        text = self.plate_part2_line_edit.text().upper()
-        self.plate_part2_line_edit.setText(text)
+    def accept(self) -> None:
+        """Handle the accept event."""
+        plate_part1, plate_part2, phone_number, note = self.get_plate_info()
+        logger.debug(f"Plate Info: {(plate_part1, plate_part2, phone_number, note)}")
 
-        # Set stylesheet based on validity
-        if text and not any(char.isalnum() for char in text):
-            self.plate_part2_line_edit.setStyleSheet("background-color: #ffcccc;")
-        else:
-            self.plate_part2_line_edit.setStyleSheet("")
+        # All DB operations now use the DatabaseManager
+        db_manager = self.db_manager
 
-    def _validate_phone_number(self):
-        """Validate the phone number input."""
-        text = self.phone_line_edit.text()
-
-        # Allow only digits and hyphens
-        filtered_text = ''.join(c for c in text if c.isdigit() or c == '-')
-        if filtered_text != text:
-            self.phone_line_edit.setText(filtered_text)
-
-        # Set stylesheet based on validity
-        if filtered_text and not any(c.isdigit() for c in filtered_text):
-            self.phone_line_edit.setStyleSheet("background-color: #ffcccc;")
-        else:
-            self.phone_line_edit.setStyleSheet("")
-
-    def accept(self):
-        """Handle the OK button click with enhanced validation."""
-        # Get input values
-        part1 = self.plate_part1_line_edit.text().strip().upper()
-        part2 = self.plate_part2_line_edit.text().strip().upper()
-        phone_number = self.phone_line_edit.text().strip()
-        note = self.note_text_edit.toPlainText().strip()
-
-        # Validate inputs
-        if not self._validate_inputs(part1, part2, phone_number):
-            return
-
-        # Check for duplicates with improved error messages
-        if not self._check_for_duplicates(part1, part2, phone_number, note):
-            return
-
-        # Process the data based on operation type
         if self.plate_type == 'add':
-            self._add_plate_info(part1, part2, phone_number, note)
-        else:
-            self._update_plate_info(part1, part2, phone_number, note)
-
-        # Close the dialog
-        super(RefactoredAddPlateDialog, self).accept()
-
-    def _validate_inputs(self, part1, part2, phone_number):
-        """Validate the input fields."""
-        if not part1 or not part2:
-            QtWidgets.QMessageBox.warning(
-                self, '警告', '車牌號碼不可為空',
-                QtWidgets.QMessageBox.Ok
-            )
-            return False
-
-        if not phone_number:
-            QtWidgets.QMessageBox.warning(
-                self, '警告', '電話號碼不可為空',
-                QtWidgets.QMessageBox.Ok
-            )
-            return False
-
-        return True
-
-    def _check_for_duplicates(self, part1, part2, phone_number, note):
-        """Check for duplicate entries in the database."""
-        try:
-            db_manager = DatabaseManager()
-
-            # For modification, we don't need to check for duplicates of the same entry
-            if self.plate_type == 'modify':
-                return True
-
-            # Use the original implementation through our refactored DatabaseManager
-            if db_manager.plate_and_phone_exists(part1, part2, phone_number):
-                QtWidgets.QMessageBox.warning(
-                    self, '警告', f'車牌號碼 {part1}-{part2} 與電話號碼 {phone_number} 的組合已存在',
-                    QtWidgets.QMessageBox.Ok
-                )
-                return False
-
-            if db_manager.plate_and_phone_note_exists(part1, part2, phone_number, note):
-                QtWidgets.QMessageBox.warning(
-                    self, '警告', f'車牌號碼 {part1}-{part2} 與電話號碼 {phone_number} 和備註的組合已存在',
-                    QtWidgets.QMessageBox.Ok
-                )
-                return False
-
-            return True
-        except Exception as e:
-            logger.error(f"Error checking for duplicates: {e}")
-            QtWidgets.QMessageBox.critical(
-                self, '錯誤', f'檢查資料時發生錯誤: {str(e)}',
-                QtWidgets.QMessageBox.Ok
-            )
-            return False
-
-    def _add_plate_info(self, part1, part2, phone_number, note):
-        """Add a new plate info to the database."""
-        try:
-            db_manager = DatabaseManager()
-            if db_manager.add_plate_info(part1, part2, phone_number, note):
-                logger.info(f"Added plate info: {part1}-{part2} with phone: {phone_number}")
+            # Check if plate and phone already exist
+            if db_manager.check_plate_phone_exists(plate_part1, plate_part2, phone_number):
+                error_dialog = QtWidgets.QMessageBox()
+                error_dialog.setIcon(QtWidgets.QMessageBox.Critical)
+                error_dialog.setWindowTitle("錯誤")
+                error_dialog.setText("此車牌號碼和電話號碼已存在。")
+                error_dialog.addButton("確定", QtWidgets.QMessageBox.AcceptRole)
+                error_dialog.exec_()
+            # Check if plate exists with different phone
+            elif db_manager.check_plate_exists(plate_part1, plate_part2):
+                warning_dialog = QtWidgets.QMessageBox()
+                warning_dialog.setIcon(QtWidgets.QMessageBox.Warning)
+                warning_dialog.setWindowTitle("警告")
+                warning_dialog.setText("此車牌號碼已存在但電話號碼不同。是否繼續保存？")
+                yes_button = warning_dialog.addButton("是", QtWidgets.QMessageBox.YesRole)
+                no_button = warning_dialog.addButton("否", QtWidgets.QMessageBox.NoRole)
+                warning_dialog.exec_()
+                if warning_dialog.clickedButton() == yes_button:
+                    db_manager.add_plate_info(plate_part1, plate_part2, phone_number, note)
+                    self.done(QtWidgets.QDialog.Accepted)
+                else:
+                    self.done(QtWidgets.QDialog.Rejected)
             else:
-                logger.error(f"Failed to add plate info: {part1}-{part2}")
-        except Exception as e:
-            logger.error(f"Error adding plate info: {e}")
-            QtWidgets.QMessageBox.critical(
-                self, '錯誤', f'新增資料時發生錯誤: {str(e)}',
-                QtWidgets.QMessageBox.Ok
-            )
-
-    def _update_plate_info(self, part1, part2, phone_number, note):
-        """Update an existing plate info in the database."""
-        try:
-            db_manager = DatabaseManager()
-            if db_manager.update_plate_info(part1, part2, phone_number, note):
-                logger.info(f"Updated plate info: {part1}-{part2} with phone: {phone_number}")
+                db_manager.add_plate_info(plate_part1, plate_part2, phone_number, note)
+                self.done(QtWidgets.QDialog.Accepted)
+        else:  # plate_type == 'edit'
+            # Check if plate, phone and note combination already exists
+            if db_manager.check_plate_phone_note_exists(plate_part1, plate_part2, phone_number, note):
+                error_dialog = QtWidgets.QMessageBox()
+                error_dialog.setIcon(QtWidgets.QMessageBox.Critical)
+                error_dialog.setWindowTitle("錯誤")
+                error_dialog.setText("此車牌號碼、電話號碼與相同備註已經存在。")
+                error_dialog.addButton("確定", QtWidgets.QMessageBox.AcceptRole)
+                error_dialog.exec_()
             else:
-                logger.error(f"Failed to update plate info: {part1}-{part2}")
-        except Exception as e:
-            logger.error(f"Error updating plate info: {e}")
-            QtWidgets.QMessageBox.critical(
-                self, '錯誤', f'更新資料時發生錯誤: {str(e)}',
-                QtWidgets.QMessageBox.Ok
-            )
+                db_manager.add_plate_info(plate_part1, plate_part2, phone_number, note)
+                self.done(QtWidgets.QDialog.Accepted)
+
+    def get_plate_info(self) -> tuple:
+        """Get the plate info from the input fields."""
+        return (
+            self.plate_part1_line_edit.text(),
+            self.plate_part2_line_edit.text(),
+            self.phone_number_line_edit.text(),
+            self.note_line_edit.text()
+        )
+
+    def convert_to_upper(self, text: str) -> None:
+        """Convert the input text to uppercase."""
+        sender = self.sender()
+        sender.blockSignals(True)
+        sender.setText(text.upper())
+        sender.blockSignals(False)
+
+    def apply_modern_style(self):
+        """Apply modern styling to the dialog."""
+        self.setStyleSheet("""
+            QDialog {
+                background-color: #f0f0f0;
+            }
+            QLabel {
+                color: #333333;
+                padding: 5px;
+            }
+            QLineEdit {
+                background-color: white;
+                border: 1px solid #cccccc;
+                border-radius: 5px;
+                padding: 5px;
+            }
+            QPushButton {
+                background-color: #4a86e8;
+                color: white;
+                border: none;
+                border-radius: 5px;
+                padding: 10px;
+                min-width: 80px;
+            }
+            QPushButton:hover {
+                background-color: #3a76d8;
+            }
+            QPushButton:pressed {
+                background-color: #2a66c8;
+            }
+        """)

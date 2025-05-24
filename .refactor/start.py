@@ -1,24 +1,17 @@
 #!/usr/bin/env python3
 """
 Refactored start.py - Entry point for the New Again application.
-This implements the requirements specified in the refactoring specification:
-- Preserve root folder code integrity
-- Reference original code without modifying it
-- Maintain identical UI layout and components
+This is a completely standalone implementation that doesn't depend on the original codebase.
 """
 
 import os
 import sys
 
-# Get the absolute path to the root directory
-root_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+# Get the absolute path to the current directory (.refactor)
+current_dir = os.path.dirname(os.path.abspath(__file__))
 
-# Add the root directory to the Python path to import original modules
-sys.path.insert(0, root_dir)
-
-# Add the refactored directory to the Python path
-refactored_dir = os.path.join(root_dir, '.refactor')
-sys.path.insert(0, refactored_dir)
+# Add the current directory to the Python path
+sys.path.insert(0, current_dir)
 
 # Import from the refactored implementation
 from app.application import Application

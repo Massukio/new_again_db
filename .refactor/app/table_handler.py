@@ -1,13 +1,9 @@
 """
 Enhanced TableViewHandler for the refactored implementation.
-This module improves the original TableViewHandler with better organization and features.
+This is a completely standalone implementation that doesn't depend on the original codebase.
 """
 
 from PyQt5 import QtCore, QtWidgets
-
-# Import original code
-from app.table_view_handler import TableViewHandler as OriginalTableViewHandler
-from db.database import filter_plate_info
 
 # Import refactored implementations
 from ..utils.formatter import TextFormatter

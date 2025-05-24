@@ -1,21 +1,18 @@
 """
 Main application class for the refactored implementation of New Again.
+This is a standalone implementation that doesn't depend on the original codebase.
 """
 
 import sys
 import os
 from PyQt5 import QtWidgets
 
-# Import original code
-from app.main_ui import UiMainWindow
-from db.initialize_db import initialize_database
-from db.database import add_plate_info, get_all_plate_info, update_plate_info, delete_plate_info
-
-# Import refactored implementations
+# Import refactored implementations only
 from .main_window import MainWindow
 from ..utils.logger import logger
 from ..utils.config_manager import ConfigManager
 from ..db.database_manager import DatabaseManager
+from ..db.init import initialize_database
 
 
 class Application:
